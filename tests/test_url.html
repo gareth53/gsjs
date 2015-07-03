@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gsjs.js URL Tests</title>
+  <link rel="stylesheet" href="assets/qunit-1.11.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="assets/qunit-1.11.0.js"></script>
+  <script src="../gsjs.url.js"></script>
+<script>
+  test("Test Object returned", function() {
+
+    var tests= [
+      //in, out
+      ['http://www.google.com/', {}],
+      ['http://www.google.com/?', {}],
+      ['http://www.google.com/?test=', { 'test': undefined }],
+      ['http://www.google.com/?test=2', { 'test': '2' }],
+      ['http://www.google.com/?test=true', { 'test': 'true' }],
+      ["http://www.google.com/?test={'some':'json','ina':'string'}", { 'test': "{'some':'json','ina':'string'}" }],
+      ['http://www.google.com/?test=2&test2=3', { 'test': '2', 'test2': '3' }],
+      ['http://www.google.com/?test=2&amp;test2=3', { 'test': '2', 'test2': '3' }],
+      ['http://www.google.com/?test=2&amp;test=3', { 'test': '3' }],
+    ]
+    for (var t=0 ; t<tests.length;t++) {
+      var actual = gsjs.url.getQueryStringVal(tests[t][0]);
+      var expected = tests[t][1];
+      equal(typeof actual, typeof expected);
+      for (var i in expected) {
+         equal(actual[i], expected[i]);    
+      }
+    }
+ });
+
+test("Test string returned for key", function() {
+    var tests= [
+      // in, key, out
+      ['http://www.google.com/', 'testkey', undefined],
+      ['http://www.google.com/?', 'testkey', undefined],
+      ['http://www.google.com/?test=', 'test', undefined],
+      ['http://www.google.com/?test=0', 'test', '0'],
+      ['http://www.google.com/?test=false', 'test', 'false'],
+      ['http://www.google.com/?test=2&amp;test=3', 'test', '3'],
+      ['http://www.google.com/?test=2&amp;test=', 'test', undefined],
+    ]
+    for (var t=0 ; t<tests.length;t++) {
+        var actual = gsjs.url.getQueryStringVal(tests[t][0], tests[t][1]);
+        var expected = tests[t][2];
+        equal(typeof actual, typeof expected);
+      if (typeof expected !== undefined) {
+        equal(actual, expected);
+      }
+    }
+
+});
+
+</script>
+</body>
+</html>
