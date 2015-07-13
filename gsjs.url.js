@@ -42,9 +42,11 @@ gsjs.url = {
         len = bits.length;
         for (var i=0;i<len;i++) {
             var key_val = bits[i].split('='),
-                name = key_val[0];
-                val = key_val[1]
-                val = (val) ? val : undefined;
+                name = key_val[0],
+                val = key_val[1];
+                console.log(key_val)
+                console.log(val)
+                val = (val) ? decodeURIComponent(val) : undefined;
             qs_vals[name] = val;
         }
         if (keyname) {
