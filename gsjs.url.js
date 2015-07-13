@@ -1,6 +1,7 @@
 var gsjs = window.gsjs||{};
 
 gsjs.url = {
+
     getQueryStringVal: function(url, keyname) {
         /*
         key - should be a string (altho numbers work fine)
@@ -44,14 +45,30 @@ gsjs.url = {
             var key_val = bits[i].split('='),
                 name = key_val[0],
                 val = key_val[1];
-                console.log(key_val)
-                console.log(val)
-                val = (val) ? decodeURIComponent(val) : undefined;
-            qs_vals[name] = val;
+            qs_vals[name] = (val) ? decodeURIComponent(val) : undefined;
         }
         if (keyname) {
             return (qs_vals[keyname]) ? qs_vals[keyname] : undefined;
         }
         return qs_vals;
+    },
+
+    updateQueryStringVal: function(url, key, value) {
+        var keys = this.getQueryStringVal(url);
+        keys[key] = value;
+        return url + this.jsonToQueryString(keys);
+    },
+
+    jsonToQueryString: function(json) {
+        var qs = '',
+            separator = '',
+            val;
+        for (var i in json) {
+            val = json[i];
+            if (val === '') continue;
+            qs += separator + i + '=' + encodeURIComponent(val);
+            separator = '&';
+        }
+        return (qs) ? '?' + qs : qs;
     }
 }

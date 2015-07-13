@@ -56,8 +56,43 @@ test("Test string returned for key", function() {
         equal(actual, expected);
       }
     }
-
 });
+
+test("Test JSON to QueryString functionality", function() {
+    var tests= [
+      ['', ''],
+      [{}, ''],
+      [{ 'test': 2 }, '?test=2'],
+      [{ 'test': 2, 'test2': 3 }, '?test=2&test2=3'],
+      [{ 'test': 2, 'test2': 3, 'test3': true }, '?test=2&test2=3&test3=true'],
+      [{ 'test': 2, 'test2': 3, 'test3': true, 'test4': 'a string' }, '?test=2&test2=3&test3=true&test4=a%20string'],
+      [{ 'test': 2, 'test': 3 }, '?test=3'],
+      [{ 'test': false }, '?test=false'],
+      [{ 'test': '' }, ''],
+      [{ 'test': undefined }, '?test=undefined'],
+    ]
+    for (var t=0 ; t<tests.length;t++) {
+        var actual = gsjs.url.jsonToQueryString(tests[t][0]);
+        var expected = tests[t][1];
+        equal(actual, expected);
+    }
+});
+
+test("Test updated query string", function() {
+    // function args followed by expected result
+    var tests= [
+      ['example.com', 'test', '2', 'example.com?test=2'],
+      ['example.com', 'test', '', 'example.com'],
+      ['example.com', 'test', undefined, 'example.com?test=undefined'],
+    ]
+    for (var t=0 ; t<tests.length;t++) {
+        var actual = gsjs.url.updateQueryStringVal(tests[t][0], tests[t][1], tests[t][2]);
+        var expected = tests[t][3];
+        equal(actual, expected);
+    }
+});
+
+
 
 </script>
 </body>
