@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gsjs.js Array Tests</title>
+  <link rel="stylesheet" href="assets/qunit-1.11.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="assets/qunit-1.11.0.js"></script>
+  <script src="../gsjs.array.js"></script>
+<script>
+  test("Test randomize", function() {
+
+    var tests= [
+      [1,2,3,4,5,6],
+      ['1','2','3','4','5'],
+      [{}, undefined, true, 'string', []]
+    ]
+    for (var t=0 ; t<tests.length;t++) {
+      var output = gsjs.array.randomize(tests[t]);
+      equal(typeof output, typeof tests[t]);
+      equal(output.length, tests[t].length)
+      for (var i in output) {
+         ok(tests[t].indexOf(output[i]) > -1);
+      }
+    }
+ });
+
+    
+  test("Test get_random_entry", function() {
+    var tests = [
+      [1,2,3,4,5,6],
+      ['a','b','c'],
+      [true, false, undefined, 1, 'string', 2.3, null]
+    ];
+    for (var t=0 ; t<tests.length;t++) {
+        var output_tracker = []
+        for (var i=0; i<100; i++) {
+          var output = gsjs.array.get_random_entry(tests[t]);
+          ok(tests[t].indexOf(output) > -1);
+          output_tracker.push(output);
+        }
+        // this *could* fail! we're testing random!
+        for (var q=0; q<tests[t].length; q++) {
+            ok(output_tracker.indexOf(tests[t][q]) > -1);
+        }
+    }
+ }); 
+
+  test("Test get_random_entry from empty array", function() {
+      ok(typeof gsjs.array.get_random_entry([]) === 'undefined')
+  });  
+    
+    
+  test("Test combine", function() {
+    var tests = [
+        // in, limit, expected
+      [[[1,2,3,4,5,6], ['a','b','c']], 10, [1,'a',2,'b',3,'c',4,5,6]],
+      [[[1,2,3,4,5,6], ['a','b','c']], 3, [1,'a',2]],
+      [[], 3, []],
+      [[[true, false, undefined], [1, 'string', 2.3, null]], 9999, [true, 1, false, 'string', undefined, 2.3, null]],
+    ];
+    for (var t=0 ; t<tests.length;t++) {
+      var arrs = tests[t][0],
+          limit = tests[t][1],
+          expected = tests[t][2];
+        
+      var output = gsjs.array.combine(arrs, limit);
+      equal(output.length, expected.length);
+      for (var i=0; i<output.length; i++) {
+          equal(output[i], expected[i]);
+      }
+    }
+ });    
+    
+</script>
+</body>
+</html>
