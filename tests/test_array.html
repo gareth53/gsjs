@@ -68,13 +68,100 @@
           expected = tests[t][2];
         
       var output = gsjs.array.combine(arrs, limit);
-      equal(output.length, expected.length);
-      for (var i=0; i<output.length; i++) {
-          equal(output[i], expected[i]);
-      }
+      deepEqual(output, expected);
     }
  });    
+
+test("Test pop_from (simple cases)", function() {
+    var tests = [
+        // in, index, expected value, expected array
+      [[1,2,3,4,5,6], 0, 1, [2,3,4,5,6]],
+      [[1,2,3,4,5,6], 1, 2, [1,3,4,5,6]],
+      [[1,2,3,4,5,6], 5, 6, [1,2,3,4,5]],
+      [[1,2,3,4,5,6], -5, 1, [2,3,4,5,6]],
+      [['1','2','3','4','5','6'], 5, '6', ['1','2','3','4','5']],
+    ];
+    for (var t=0 ; t<tests.length;t++) {
+      var array = tests[t][0],
+          index = tests[t][1],
+          expected_val = tests[t][2],
+          expected_array = tests[t][3];
+        
+      var output = gsjs.array.pop_at(array, index);
+      equal(output, expected_val);
+      equal(array.length, expected_array.length);
+      deepEqual(array, expected_array, "");
+    }
+ });    
+
+test("Test pop_at (invalid values)", function() {
+    var input = [1,2,3,4,5];
+    var expected_array = [1,2,3,4,5];
+    var output = gsjs.array.pop_at(input, -6);
+    equal(typeof output, 'undefined')
+    deepEqual(input, expected_array);
+
+    output = gsjs.array.pop_at(input, 100);
+    equal(typeof output, 'undefined')
+    deepEqual(input, expected_array);
+});
+
     
+test("Test remove_at (simple cases)", function() {
+    var tests = [
+        // in, index, expected value, expected array
+      [[1,2,3,4,5,6], 0, 1, [2,3,4,5,6]],
+      [[1,2,3,4,5,6], 1, 2, [1,3,4,5,6]],
+      [[1,2,3,4,5,6], 5, 6, [1,2,3,4,5]],
+      [[1,2,3,4,5,6], -5, 1, [2,3,4,5,6]],
+      [['1','2','3','4','5','6'], 5, '6', ['1','2','3','4','5']],
+    ];
+    for (var t=0 ; t<tests.length;t++) {
+      var array = tests[t][0],
+          index = tests[t][1],
+          expected_val = tests[t][2],
+          expected_array = tests[t][3];
+        
+      var output = gsjs.array.remove_at(array, index);
+      var output_array = output[0];
+      var output_value = output[1];
+      equal(output_value, expected_val);
+      equal(output_array.length, expected_array.length);
+      deepEqual(output_array, expected_array, "");
+    }
+ });    
+
+test("Test remove_at (invalid values)", function() {
+    var input = [1,2,3,4,5];
+    var expected_array = [1,2,3,4,5];
+    var output = gsjs.array.remove_at(input, -6);
+    var output_array = output[0];
+    var output_value = output[1];
+    equal(typeof output_value, 'undefined')
+    deepEqual(output_array, expected_array);
+
+    output = gsjs.array.remove_at(input, 100);
+    var output_array = output[0];
+    var output_value = output[1];
+    equal(typeof output_value, 'undefined')
+    deepEqual(output_array, expected_array);
+});    
+   
+    
+
+test("Test compare array (successes)", function() {
+    var tests = [
+        [1,2,3,4,5],
+        ['1','2','3','4','5'],
+        [{}, true, false, undefined, null]
+        ];
+
+    for (var i=0; i<tests.length;i++) {
+        ok(gsjs.array.compare_array_values(tests[i], tests[i]))
+    }
+});
+    
+
 </script>
 </body>
 </html>

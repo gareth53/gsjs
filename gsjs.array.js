@@ -54,28 +54,48 @@ gsjs.array = {
         }
     },
 
-    remove_from_array: function (arr, index) {
+    pop_at: function(arr, index) {
         /*
-        remove an entry from an array by index
+        remove an items from a specified index, mutate the array, return the value.
+        supports negative indexing
         */
-        if (index < 0) return arr.slice(0);
-        var pt1 = arr.slice(0, index),
-            pt2 = arr.slice(index + 1);
-        return pt1.concat(pt2);        
-    },
-
-    delete_from_array: function (arr, value) {
-        /*
-        remove an entry from an array by value
-        */
-        var returnArr = [],
-            entry;
-        for (var i=0, lim=arr.length ; i<lim ; i++) {
-            entry = arr[i];
-            if (entry !== value) {
-                returnArr.push(entry);
+        var lim = arr.length,
+            usable_index = (index < 0) ? lim + index - 1 : index,
+            value = arr[usable_index],
+            i = 0;            
+        if (usable_index >= lim) return value;
+        for (i;i<lim;i++) {
+            var this_val = arr.shift();
+            if (i != usable_index) {
+                arr.push(this_val);
             }
         }
-        return returnArr;
+        return value;
+    },
+    
+    remove_at: function(arr, index) {
+        /*
+        remove an items from a specified index, returns the changed array and the value
+        much cheaper than the pop_at method, but doesn't mutate the original array
+        */
+        var lim = arr.length,
+            usable_index = (index < 0) ? lim + index - 1 : index,
+            value = arr[usable_index];
+        if ((usable_index > -1) && (usable_index < lim)) {
+            arr = arr.slice(0, usable_index).concat(arr.slice(usable_index + 1));
+        }
+        return [arr, value];
+    },
+    
+    compare_array_values: function(arr1, arr2) {
+        var i=0,
+            lim =arr1.length;
+        if (lim != arr2.length) return false;
+        for (i;i<lim;i++) {
+            if (arr1[i] !== arr2[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 };
