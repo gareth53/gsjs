@@ -94,5 +94,34 @@ gsjs.date = {
         returnVal['milliseconds'] = ms - taken;
 
         return returnVal;
+    },
+
+    date_diff:function(dt1, dt2) {
+
+        var future = (dt1.getTime() > d2.getTime()) ? dt1 : dt2,
+            past = (future == dt1) ? dt2 : dt1,
+            returnVal = {},
+            units = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'],
+            date_list = function(date) {
+                return [date.getYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()]
+            },
+            round_down = function(f_unit, p_unit, f_subunit, p_subunit) {
+                diff = f_unit - p_unit;
+                if (f_subunit && p_subunit) {
+                    if (f_subunit < p_subunit) {
+                        diff = diff - 1;
+                    }
+                }
+                return diff;
+            },
+            future_list = date_list(future),
+            past_list = date_list(past),
+            loop_limit = units.length
+        for (var i=0 ; i<loop_limit ; i++) {
+            returnVal[units[i]] = round_down(future_list[i], past_list[i], future_list[i+1], past_list[i+1])
+        }
+        // TODO - add totalValues - months is the only difficult one, right?
+
+        return returnVal;
     }
 }
