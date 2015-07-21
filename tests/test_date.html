@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gsjs.js Date Tests</title>
+  <link rel="stylesheet" href="assets/qunit-1.11.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="assets/qunit-1.11.0.js"></script>
+  <script src="../gsjs.date.js"></script>
+<script>
+  test("Test get_ordinal", function() {
+    var tests = [
+      [new Date(2015, 0, 1, 0, 0, 0), 'st'],
+      [new Date(2015, 0, 2, 0, 0, 0), 'nd'],
+      [new Date(2015, 0, 3, 0, 0, 0), 'rd'],
+      [new Date(2015, 0, 4, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 5, 0, 0, 0), 'th'],
+
+      [new Date(2015, 0, 6, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 7, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 8, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 9, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 10, 0, 0, 0), 'th'],
+
+      [new Date(2015, 0, 11, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 12, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 13, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 14, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 15, 0, 0, 0), 'th'],
+
+      [new Date(2015, 0, 16, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 17, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 18, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 19, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 20, 0, 0, 0), 'th'],
+
+      [new Date(2015, 0, 21, 0, 0, 0), 'st'],
+      [new Date(2015, 0, 22, 0, 0, 0), 'nd'],
+      [new Date(2015, 0, 23, 0, 0, 0), 'rd'],
+      [new Date(2015, 0, 24, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 25, 0, 0, 0), 'th'],
+
+      [new Date(2015, 0, 26, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 27, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 28, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 29, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 30, 0, 0, 0), 'th'],
+      [new Date(2015, 0, 31, 0, 0, 0), 'st']
+    ]
+
+    for (var t=0; t<tests.length; t++) {
+      var input = tests[t][0],
+          output = tests[t][1];
+          equal(gsjs.date.get_ordinal(input), output);
+    }
+ });
+
+  test("Test get_month_string", function() {
+    var tests = [
+      [new Date(2015, 0, 1, 0, 0, 0), 'January', "Jan"],
+      [new Date(2015, 1, 2, 0, 0, 0), 'February', 'Feb'],
+      [new Date(2015, 2, 3, 0, 0, 0), 'March', 'Mar'],
+      [new Date(2015, 3, 4, 0, 0, 0), 'April', 'Apr'],
+      [new Date(2015, 4, 5, 0, 0, 0), 'May', 'May'],
+
+      [new Date(2015, 5, 6, 0, 0, 0), 'June', 'Jun'],
+      [new Date(2015, 6, 7, 0, 0, 0), 'July', 'Jul'],
+      [new Date(2015, 7, 8, 0, 0, 0), 'August', "Aug"],
+      [new Date(2015, 8, 9, 0, 0, 0), 'September', "Sep"],
+      [new Date(2015, 9, 10, 0, 0, 0), 'October', 'Oct'],
+
+      [new Date(2015, 10, 11, 0, 0, 0), 'November', 'Nov'],
+      [new Date(2015, 11, 12, 0, 0, 0), 'December', 'Dec']
+    ]
+
+    for (var t=0; t<tests.length; t++) {
+      var input = tests[t][0],
+          output1 = tests[t][1],
+          output2 = tests[t][1];
+          equal(gsjs.date.get_month_string(input), output1);
+          equal(gsjs.date.get_month_string(input, 3), output2);
+    }
+ });
+
+  test("Test get_month_string (invalid input)", function() {
+      input = new Date(2015, 4, 5, 0, 0, 0);
+      equal(gsjs.date.get_month_string(input, 12), 'May');
+})
+
+  test("Test TimeDelta attributes", function() {
+      output = gsjs.date.timedelta(1);
+      var attrs = [
+        'years',
+        'months',
+        'days',
+        'hours',
+        'minutes',
+        'seconds',
+        'milliseconds',
+        'total_years',
+        'total_months',
+        'total_days',
+        'total_hours',
+        'total_minutes',
+        'total_seconds',
+        'total_milliseconds',
+      ]
+      for (var i=0; i<attrs.length ; i++) {
+        equal(typeof output[attrs[i]], 'number');
+    }
+})
+
+  test("Test TimeDelta Years", function() {
+      var ms_in_a_year = 1000 * 60 * 60 * 24 * 366;
+      equal(gsjs.date.timedelta(ms_in_a_year/2).years, 0);
+      equal(gsjs.date.timedelta(ms_in_a_year).years, 1);
+      equal(gsjs.date.timedelta(ms_in_a_year*2).years, 2);
+      equal(gsjs.date.timedelta(ms_in_a_year*3).years, 3);
+      equal(gsjs.date.timedelta(ms_in_a_year*4).years, 4);
+      equal(gsjs.date.timedelta(ms_in_a_year*5).years, 5);
+
+      equal(gsjs.date.timedelta(ms_in_a_year/2).total_years, 0);
+      equal(gsjs.date.timedelta(ms_in_a_year).total_years, 1);
+      equal(gsjs.date.timedelta(ms_in_a_year*2).total_years, 2);
+      equal(gsjs.date.timedelta(ms_in_a_year*3).total_years, 3);
+      equal(gsjs.date.timedelta(ms_in_a_year*4).total_years, 4);
+      equal(gsjs.date.timedelta(ms_in_a_year*5).years, 5);
+})
+
+  test("Test TimeDelta Total Months", function() {
+      var ms_in_a_month = 1000 * 60 * 60 * 24 * 31;
+      equal(gsjs.date.timedelta(ms_in_a_month/2).total_months, 0);
+      equal(gsjs.date.timedelta(ms_in_a_month).total_months, 1);
+      equal(gsjs.date.timedelta(ms_in_a_month*2).total_months, 2);
+      equal(gsjs.date.timedelta(ms_in_a_month*3).total_months, 3);
+      equal(gsjs.date.timedelta(ms_in_a_month*4).total_months, 4);
+      equal(gsjs.date.timedelta(ms_in_a_month*5).total_months, 5);
+})
+
+  test("Test TimeDelta Total Days", function() {
+      var ms_in_a_day = 1000 * 60 * 60 * 24;
+      equal(gsjs.date.timedelta(ms_in_a_day/2).total_days, 0);
+      equal(gsjs.date.timedelta(ms_in_a_day).total_days, 1);
+      equal(gsjs.date.timedelta(ms_in_a_day*2).total_days, 2);
+      equal(gsjs.date.timedelta(ms_in_a_day*3).total_days, 3);
+      equal(gsjs.date.timedelta(ms_in_a_day*4).total_days, 4);
+      equal(gsjs.date.timedelta(ms_in_a_day*5).total_days, 5);
+})
+
+  test("Test TimeDelta Total Hours", function() {
+      var ms_in_a_hour = 1000 * 60 * 60;
+      equal(gsjs.date.timedelta(ms_in_a_hour/2).total_hours, 0);
+      equal(gsjs.date.timedelta(ms_in_a_hour).total_hours, 1);
+      equal(gsjs.date.timedelta(ms_in_a_hour*2).total_hours, 2);
+      equal(gsjs.date.timedelta(ms_in_a_hour*3).total_hours, 3);
+      equal(gsjs.date.timedelta(ms_in_a_hour*4).total_hours, 4);
+      equal(gsjs.date.timedelta(ms_in_a_hour*5).total_hours, 5);
+})
+
+  test("Test TimeDelta Total Minutes", function() {
+      var ms_in_a_min = 1000 * 60;
+      equal(gsjs.date.timedelta(ms_in_a_min/2).total_minutes, 0);
+      equal(gsjs.date.timedelta(ms_in_a_min).total_minutes, 1);
+      equal(gsjs.date.timedelta(ms_in_a_min*2).total_minutes, 2);
+      equal(gsjs.date.timedelta(ms_in_a_min*3).total_minutes, 3);
+      equal(gsjs.date.timedelta(ms_in_a_min*4).total_minutes, 4);
+      equal(gsjs.date.timedelta(ms_in_a_min*5).total_minutes, 5);
+})
+
+  test("Test TimeDelta Total Secs", function() {
+      var ms_in_a_sec = 1000;
+      equal(gsjs.date.timedelta(ms_in_a_sec/2).total_seconds, 0);
+      equal(gsjs.date.timedelta(ms_in_a_sec).total_seconds, 1);
+      equal(gsjs.date.timedelta(ms_in_a_sec*2).total_seconds, 2);
+      equal(gsjs.date.timedelta(ms_in_a_sec*3).total_seconds, 3);
+      equal(gsjs.date.timedelta(ms_in_a_sec*4).total_seconds, 4);
+      equal(gsjs.date.timedelta(ms_in_a_sec*5).total_seconds, 5);
+}) 
+
+  test("Test TimeDelta", function() {
+    var tests = [
+      {
+          'date1':   [2015, 0, 1, 13, 0, 0, 500],
+          'date2':   [2015, 0, 1, 13, 0, 0, 0],
+          'expected':[0,    0, 0, 0,  0, 0, 500]
+      },
+      {
+          'date1':   [2015, 0, 1, 13, 0, 1, 500],
+          'date2':   [2015, 0, 1, 13, 0, 0, 0],
+          'expected':[0,    0, 0, 0,  0, 1, 500]
+      },
+      {
+          'date1':   [2015, 0, 1, 13, 1, 1, 500],
+          'date2':   [2015, 0, 1, 13, 0, 0, 0],
+          'expected':[0,    0, 0, 0,  1, 1, 500]
+      },
+      {
+          'date1':   [2015, 0, 1, 14, 1, 1, 500],
+          'date2':   [2015, 0, 1, 13, 0, 0, 0],
+          'expected':[0,    0, 0, 1,  1, 1, 500]
+      },
+      {
+          'date1':   [2015, 0, 2, 14, 1, 1, 500],
+          'date2':   [2015, 0, 1, 13, 0, 0, 0],
+          'expected':[0,    0, 1, 1,  1, 1, 500]
+      },
+      {
+        // feb 2 - jan 1
+          'date1':   [2015, 1, 2, 14, 1, 1, 500],
+          'date2':   [2015, 0, 1, 13, 0, 0, 0],
+          'expected':[0,    1, 1, 1,  1, 1, 500]
+      },
+
+    ];
+    function date(arr) {
+      return new Date(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
+    };
+    for (var i=0; i<tests.length; i++) {
+      var test = tests[i];
+      var date1 = date(test['date1']),
+          date2 = date(test['date2']),
+          ms = date1.getTime() - date2.getTime(),
+          timedelta = gsjs.date.timedelta(ms),
+          expect = test['expected'];
+
+      equal(timedelta.years, expect[0]);
+      equal(timedelta.months, expect[1]);
+      equal(timedelta.days, expect[2]);
+      equal(timedelta.hours, expect[3]);
+      equal(timedelta.minutes, expect[4]);
+      equal(timedelta.seconds, expect[5]);
+      equal(timedelta.milliseconds, expect[6]);
+    }
+}) 
+</script>
+</body>
+</html>
