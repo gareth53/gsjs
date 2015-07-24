@@ -86,12 +86,37 @@
  });
 
   test("Test get_month_string (invalid input)", function() {
-      input = new Date(2015, 4, 5, 0, 0, 0);
+      var input = new Date(2015, 4, 5, 0, 0, 0);
       equal(gsjs.date.get_month_string(input, 12), 'May');
-})
+  })
+
+  test("Test is_leap_year", function() {
+      var seed = 1952,
+          future,
+          past;
+      for (var i=0; i<10; i++) {
+        future = seed + (i*4);
+        past = seed - (i*4);
+        equal(gsjs.date.is_leap_year(new Date(future)), true);
+        equal(gsjs.date.is_leap_year(new Date(past)), true);
+        for (var p=1; p<4; p++) {
+            equal(gsjs.date.is_leap_year(new Date(future + p)), false);
+            equal(gsjs.date.is_leap_year(new Date(past - p)), false);
+        }
+      }
+      // test the 'edge cases' i.e. century starters
+      equal(gsjs.date.is_leap_year(new Date(1900)), false);
+      equal(gsjs.date.is_leap_year(new Date(2100)), false);
+      equal(gsjs.date.is_leap_year(new Date(2200)), false);
+      equal(gsjs.date.is_leap_year(new Date(2300)), false);
+
+      equal(gsjs.date.is_leap_year(new Date(2000)), true);
+      equal(gsjs.date.is_leap_year(new Date(2400)), true);
+
+  });
 
   test("Test TimeDelta attributes", function() {
-      output = gsjs.date.timedelta(1);
+      var output = gsjs.date.timedelta(new Date(), new Date());
       var attrs = [
         'years',
         'months',
@@ -113,72 +138,70 @@
     }
 })
 
-  test("Test TimeDelta Years", function() {
-      var ms_in_a_year = 1000 * 60 * 60 * 24 * 366;
-      equal(gsjs.date.timedelta(ms_in_a_year/2).years, 0);
-      equal(gsjs.date.timedelta(ms_in_a_year).years, 1);
-      equal(gsjs.date.timedelta(ms_in_a_year*2).years, 2);
-      equal(gsjs.date.timedelta(ms_in_a_year*3).years, 3);
-      equal(gsjs.date.timedelta(ms_in_a_year*4).years, 4);
-      equal(gsjs.date.timedelta(ms_in_a_year*5).years, 5);
+  test("Test TimeDelta Years, Total Years & Total Months", function() {
+      for (var i=0; i < 10 ; i++) {
+        var year = 2015,
+          date1 = new Date(year, 1, 1, 0, 0, 0, 0),
+          date2 =  new Date(year + i, 1, 1, 0, 0, 0, 0),
+          date3 =  new Date(year - i, 1, 1, 0, 0, 0, 0);
+        
+        var future = gsjs.date.timedelta(date1, date2),
+            past = gsjs.date.timedelta(date1, date3);
+       
+        equal(future.years, i);
+        equal(past.years, i);
+        equal(future.total_years, i);
+        equal(past.total_years, i);
+        equal(past.total_months, i*12);
+        equal(future.total_months, i*12);
 
-      equal(gsjs.date.timedelta(ms_in_a_year/2).total_years, 0);
-      equal(gsjs.date.timedelta(ms_in_a_year).total_years, 1);
-      equal(gsjs.date.timedelta(ms_in_a_year*2).total_years, 2);
-      equal(gsjs.date.timedelta(ms_in_a_year*3).total_years, 3);
-      equal(gsjs.date.timedelta(ms_in_a_year*4).total_years, 4);
-      equal(gsjs.date.timedelta(ms_in_a_year*5).years, 5);
+      }
 })
-
-  test("Test TimeDelta Total Months", function() {
-      var ms_in_a_month = 1000 * 60 * 60 * 24 * 31;
-      equal(gsjs.date.timedelta(ms_in_a_month/2).total_months, 0);
-      equal(gsjs.date.timedelta(ms_in_a_month).total_months, 1);
-      equal(gsjs.date.timedelta(ms_in_a_month*2).total_months, 2);
-      equal(gsjs.date.timedelta(ms_in_a_month*3).total_months, 3);
-      equal(gsjs.date.timedelta(ms_in_a_month*4).total_months, 4);
-      equal(gsjs.date.timedelta(ms_in_a_month*5).total_months, 5);
-})
-
   test("Test TimeDelta Total Days", function() {
-      var ms_in_a_day = 1000 * 60 * 60 * 24;
-      equal(gsjs.date.timedelta(ms_in_a_day/2).total_days, 0);
-      equal(gsjs.date.timedelta(ms_in_a_day).total_days, 1);
-      equal(gsjs.date.timedelta(ms_in_a_day*2).total_days, 2);
-      equal(gsjs.date.timedelta(ms_in_a_day*3).total_days, 3);
-      equal(gsjs.date.timedelta(ms_in_a_day*4).total_days, 4);
-      equal(gsjs.date.timedelta(ms_in_a_day*5).total_days, 5);
-})
+      // Jan + Feb is 31 + 28
+      var input = new Date(2015, 0, 1, 0, 0, 0, 0),
+          output = new Date(2015, 2, 1, 0, 0, 0, 0);
+      equal(gsjs.date.timedelta(input, output).total_days, 59);
 
-  test("Test TimeDelta Total Hours", function() {
-      var ms_in_a_hour = 1000 * 60 * 60;
-      equal(gsjs.date.timedelta(ms_in_a_hour/2).total_hours, 0);
-      equal(gsjs.date.timedelta(ms_in_a_hour).total_hours, 1);
-      equal(gsjs.date.timedelta(ms_in_a_hour*2).total_hours, 2);
-      equal(gsjs.date.timedelta(ms_in_a_hour*3).total_hours, 3);
-      equal(gsjs.date.timedelta(ms_in_a_hour*4).total_hours, 4);
-      equal(gsjs.date.timedelta(ms_in_a_hour*5).total_hours, 5);
-})
+      // Jan + Feb in a leap year is 31 + 29
+      var input = new Date(1972, 0, 1, 0, 0, 0, 0),
+          output = new Date(1972, 2, 1, 0, 0, 0, 0);
+      equal(gsjs.date.timedelta(input, output).total_days, 60);
 
-  test("Test TimeDelta Total Minutes", function() {
-      var ms_in_a_min = 1000 * 60;
-      equal(gsjs.date.timedelta(ms_in_a_min/2).total_minutes, 0);
-      equal(gsjs.date.timedelta(ms_in_a_min).total_minutes, 1);
-      equal(gsjs.date.timedelta(ms_in_a_min*2).total_minutes, 2);
-      equal(gsjs.date.timedelta(ms_in_a_min*3).total_minutes, 3);
-      equal(gsjs.date.timedelta(ms_in_a_min*4).total_minutes, 4);
-      equal(gsjs.date.timedelta(ms_in_a_min*5).total_minutes, 5);
-})
+      // 1 year is 365 days
+      var input = new Date(1971, 0, 1, 0, 0, 0, 0),
+          output = new Date(1972, 0, 1, 0, 0, 0, 0);
+      equal(gsjs.date.timedelta(input, output).total_days, 365);
 
-  test("Test TimeDelta Total Secs", function() {
-      var ms_in_a_sec = 1000;
-      equal(gsjs.date.timedelta(ms_in_a_sec/2).total_seconds, 0);
-      equal(gsjs.date.timedelta(ms_in_a_sec).total_seconds, 1);
-      equal(gsjs.date.timedelta(ms_in_a_sec*2).total_seconds, 2);
-      equal(gsjs.date.timedelta(ms_in_a_sec*3).total_seconds, 3);
-      equal(gsjs.date.timedelta(ms_in_a_sec*4).total_seconds, 4);
-      equal(gsjs.date.timedelta(ms_in_a_sec*5).total_seconds, 5);
-}) 
+      // 1 leap year is 366 days
+      var input = new Date(1972, 0, 1, 0, 0, 0, 0),
+          output = new Date(1973, 0, 1, 0, 0, 0, 0);
+      equal(gsjs.date.timedelta(input, output).total_days, 366);
+})
+  test("Test TimeDelta Total Hours, Minutes, Seconds", function() {
+      for (var i=0; i < 100; i++) {
+        var hour = 2015,
+          date1 = new Date(2015, 1, 1, hour, 0, 0, 0),
+          date2 =  new Date(2015, 1, 1, hour + i, 0, 0, 0),
+          date3 =  new Date(2015, 1, 1, hour - i, 0, 0, 0);
+        
+        var future = gsjs.date.timedelta(date1, date2),
+            past = gsjs.date.timedelta(date1, date3);
+       
+        equal(future.total_hours, i);
+        equal(past.total_hours, i);
+
+        equal(future.total_minutes, i*60);
+        equal(past.total_minutes, i*60);
+
+        equal(future.total_seconds, i*60*60);
+        equal(past.total_seconds, i*60*60);
+
+        equal(future.total_milliseconds, i*60*60*1000);
+        equal(past.total_milliseconds, i*60*60*1000);
+
+      }
+})
 
   test("Test TimeDelta", function() {
     var tests = [
@@ -208,12 +231,15 @@
           'expected':[0,    0, 1, 1,  1, 1, 500]
       },
       {
-        // feb 2 - jan 1
           'date1':   [2015, 1, 2, 14, 1, 1, 500],
           'date2':   [2015, 0, 1, 13, 0, 0, 0],
           'expected':[0,    1, 1, 1,  1, 1, 500]
       },
-
+      {
+          'date1':   [2015, 1, 2, 14, 1, 1, 500],
+          'date2':   [2014, 0, 1, 13, 0, 0, 0],
+          'expected':[1,    1, 1, 1,  1, 1, 500]
+      },
     ];
     function date(arr) {
       return new Date(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
@@ -222,8 +248,7 @@
       var test = tests[i];
       var date1 = date(test['date1']),
           date2 = date(test['date2']),
-          ms = date1.getTime() - date2.getTime(),
-          timedelta = gsjs.date.timedelta(ms),
+          timedelta = gsjs.date.timedelta(date1, date2),
           expect = test['expected'];
 
       equal(timedelta.years, expect[0]);
@@ -233,8 +258,22 @@
       equal(timedelta.minutes, expect[4]);
       equal(timedelta.seconds, expect[5]);
       equal(timedelta.milliseconds, expect[6]);
+
+      // now reverse the date orders
+      timedelta = gsjs.date.timedelta(date2, date1);
+      expect = test['expected'];
+
+      equal(timedelta.years, expect[0]);
+      equal(timedelta.months, expect[1]);
+      equal(timedelta.days, expect[2]);
+      equal(timedelta.hours, expect[3]);
+      equal(timedelta.minutes, expect[4]);
+      equal(timedelta.seconds, expect[5]);
+      equal(timedelta.milliseconds, expect[6]);
+
+
     }
-}) 
+});
 </script>
 </body>
 </html>

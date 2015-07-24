@@ -23,90 +23,49 @@ gsjs.date = {
     	return this.timedelta(date1.getTime() - date2.getTime());
     },
 
-    timedelta: function(ms) {
-    	/*
-        given a number of milliseconds
-		returns a timedelta-style object:
-    	*/
-        var ms_worth = {
-            'seconds': 1000,
-            'minutes': 1000 * 60,
-            'hours': 1000 * 60 * 60,
-            'days': 1000 * 60 * 60 * 24,
-            'months': 1000 * 60 * 60 * 24 * 30,
-            'years': 1000 * 60 * 60 * 24 * 30 * 365
-        }
-        var sec = 1000,
-            min = sec * 60,
-            hour = min * 60,
-            day = hour * 24,
-            month = day * 30,
-            year = day * 365;
-
-        var getYears = function(ms) {
-            return Math.floor(ms / year);
-        },
-        getMonths = function(ms) {
-            return Math.floor(ms / month);
-        },
-        getDays = function(ms) {
-            return Math.floor(ms / day);
-        },
-        getHours = function(ms) {
-            return Math.floor(ms / hour);
-        },
-        getMins = function(ms) {
-            return Math.floor(ms / min);
-        },
-        getSecs = function(ms) {
-            return Math.floor(ms / sec);
-        },
-    	returnVal = {
-    		years: getYears(ms),
-    		total_years: getYears(ms),
-    		total_months: getMonths(ms),
-    		total_days: getDays(ms),
-    		total_hours: getHours(ms),
-    		total_minutes: getMins(ms),
-    		total_seconds: getSecs(ms),
-    		total_milliseconds: ms,
-    		toString: function() {
-    			return '';
-    		}
-    	}
-        var taken = year * returnVal['years'];
-
-        returnVal['months'] = getMonths(ms - taken);
-        taken += month * returnVal['months'];
-
-        returnVal['days'] = getDays(ms - taken);
-        taken += day * returnVal['days'];
-
-        returnVal['hours'] = getHours(ms - taken);
-        taken += hour * returnVal['hours'];
-
-        returnVal['minutes'] = getMins(ms - taken);
-        taken += min * returnVal['minutes'];
-
-        returnVal['seconds'] = getSecs(ms - taken);
-        taken += sec * returnVal['seconds'];
-
-        returnVal['milliseconds'] = ms - taken;
-
-        return returnVal;
+    is_leap_year: function(year) {
+        return (new Date(year, 1, 29).getMonth() == 1);
     },
 
-    date_diff:function(dt1, dt2) {
-
-        var future = (dt1.getTime() > d2.getTime()) ? dt1 : dt2,
+    timedelta:function(dt1, dt2) {
+        /*
+        accepts two dates as arguments
+        returns an object with the follwoing attributes:
+        - years
+        - months
+        - days
+        - hours
+        - minutes
+        - seconds
+        - milliseconds
+        as well as 'total_' prefixed version
+        */
+        var future = (dt1 > dt2) ? dt1 : dt2,
             past = (future == dt1) ? dt2 : dt1,
-            returnVal = {},
-            units = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'],
+            diff = future.getTime() - past.getTime(),
+            units = [
+                'years',
+                'months',
+                'days',
+                'hours',
+                'minutes',
+                'seconds',
+                'milliseconds'
+            ],
+            returnVal = {
+                'total_milliseconds': diff,
+            },
             date_list = function(date) {
+                /*
+                convenience function to return all values in a list
+                */
                 return [date.getYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()]
             },
             round_down = function(f_unit, p_unit, f_subunit, p_subunit) {
-                diff = f_unit - p_unit;
+                /*
+                like math.floor() but for dates
+                */
+                var diff = f_unit - p_unit;
                 if (f_subunit && p_subunit) {
                     if (f_subunit < p_subunit) {
                         diff = diff - 1;
@@ -116,12 +75,25 @@ gsjs.date = {
             },
             future_list = date_list(future),
             past_list = date_list(past),
-            loop_limit = units.length
+            loop_limit = units.length;
+        
         for (var i=0 ; i<loop_limit ; i++) {
             returnVal[units[i]] = round_down(future_list[i], past_list[i], future_list[i+1], past_list[i+1])
         }
-        // TODO - add totalValues - months is the only difficult one, right?
 
+        // add totalValues
+        returnVal['total_years'] = returnVal['years'];
+        returnVal['total_months'] = returnVal['years'] * 12 + returnVal['months'];
+        var ms_worth = {
+            'seconds': 1000,
+            'minutes': 1000 * 60,
+            'hours': 1000 * 60 * 60,
+            'days': 1000 * 60 * 60 * 24
+        }
+        returnVal['total_days'] = Math.floor(diff / ms_worth['days']);
+        returnVal['total_hours'] = Math.floor(diff / ms_worth['hours']);
+        returnVal['total_minutes'] = Math.floor(diff / ms_worth['minutes']);
+        returnVal['total_seconds'] = Math.floor(diff / ms_worth['seconds']);
         return returnVal;
     }
 }
