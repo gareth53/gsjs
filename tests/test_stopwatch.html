@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gsjs.js stopwatch Tests</title>
+  <link rel="stylesheet" href="assets/qunit-1.11.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="assets/qunit-1.11.0.js"></script>
+  <script src="../gsjs.stopwatch.js"></script>
+<script>
+test("Test init, start_stop, reset", function() {
+    var sw = gsjs.timer();
+    // assert startign point
+    equal(sw.starts.length, 0);
+    equal(sw.stops.length, 0);
+    equal(sw.running, false);
+
+    sw.start_stop();
+    equal(sw.starts.length, 1);
+    equal(sw.stops.length, 0);
+    equal(sw.running, true);
+
+    sw.start_stop();
+    equal(sw.stops.length, 1);
+    equal(sw.running, false);
+
+    sw.reset();
+    equal(sw.starts.length, 0);
+    equal(sw.stops.length, 0);
+    equal(sw.running, false);
+
+});
+
+test("Test lap", function() {
+    var sw = gsjs.timer();
+    // assert startign point
+    equal(sw.laptimes.length, 0);
+
+    sw.start_stop();
+    equal(sw.running, true);
+
+    sw.lap();
+    equal(sw.laptimes.length, 1);
+
+    sw.lap();
+    equal(sw.laptimes.length, 2);
+
+    sw.lap();
+    equal(sw.laptimes.length, 3);
+});
+
+test("Test _ms_to_readable_time", function() {
+    var sw = gsjs.timer();
+    // assert startign point
+    var tests = [
+       [0, '00:00:00.000'],
+
+       [1100, '00:00:01.100'],
+       [1001, '00:00:01.001'],
+       [1010, '00:00:01.010'],
+       [1011, '00:00:01.011'],
+       [1111, '00:00:01.111'],
+
+       [12345, '00:00:12.345'],
+       [62345, '00:01:02.345'],
+       [120000, '00:02:00.000'],
+       [3840000, '01:04:00.000'],
+
+       [1000*60*60*24, '24:00:00.000'],
+    ]
+    for(var i=0; i<tests.length;i++) {
+      var expect = tests[i][1],
+          output = sw._ms_to_readable_time(tests[i][0]);
+
+      equal(output, expect);
+    }
+
+});
+
+
+
+
+</script>
+</body>
+</html>
